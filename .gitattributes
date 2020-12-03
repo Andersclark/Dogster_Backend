@@ -1,0 +1,6 @@
+# Automatically normalize line endings.
+* text eol=lf
+
+# Files that will always have LF line endings on checkout.
+*.js text eol=lf
+*.ts text eol=lf
