@@ -3,5 +3,6 @@ export interface Dog {
     name: string;
     description: string;
     owner: string;
-    home: string;
+    city: string;
+    area: string;
 }
