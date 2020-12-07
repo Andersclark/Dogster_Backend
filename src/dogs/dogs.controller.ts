@@ -7,7 +7,7 @@ import {
     ParseIntPipe,
     Patch,
     Post,
-    Query,
+    Query, UseGuards,
     UsePipes,
     ValidationPipe
 } from "@nestjs/common";
@@ -16,39 +16,55 @@ import { CreateDogDTO } from "./dto/create-dog.dto";
 import { Dog } from "./dog.entity";
 import { GetDogsFilterDTO } from './dto/get-dogs-filter.dto';
 import { DogCityValidationPipe } from "./pipes/dog-city-validation.pipe";
+import { AuthGuard } from "@nestjs/passport";
+import { User } from "../auth/user.entity";
+import { GetUser } from "../auth/get-user.decorator";
 
 @Controller('dogs')
+@UseGuards(AuthGuard())
 export class DogsController {
 
     constructor(private dogsService: DogsService) {  }
 
     @Get('/:id')
-    getDogById(@Param('id', ParseIntPipe) id: number): Promise<Dog> {
-        return this.dogsService.getDogById(id);
+    getDogById(
+      @Param('id', ParseIntPipe) id: number,
+      @GetUser() user: User
+    ): Promise<Dog> {
+        return this.dogsService.getDogById(id, user);
     }
 
     @Get()
-    getDogs(@Query(ValidationPipe) filterDTO: GetDogsFilterDTO): Promise<Dog[]> {
-        return this.dogsService.getDogs(filterDTO);
+    getDogs(@Query(ValidationPipe) filterDTO: GetDogsFilterDTO,
+            @GetUser() user: User
+            ): Promise<Dog[]> {
+        return this.dogsService.getDogs(filterDTO, user);
     }
 
     @Post()
     @UsePipes(ValidationPipe)
     createDog(
-      @Body() createDogDTO: CreateDogDTO): Promise<Dog> {
-        return this.dogsService.createDog(createDogDTO);
+      @Body() createDogDTO: CreateDogDTO,
+      @GetUser() user: User,
+      ): Promise<Dog> {
+        return this.dogsService.createDog(createDogDTO, user);
     }
 
     @Delete('/:id')
-    deleteDogById(@Param('id', ParseIntPipe) id: number): Promise<void> {
-        return this.dogsService.deleteDogById(id);
+    deleteDogById(
+        @Param('id', ParseIntPipe
+        ) id: number,
+        @GetUser() user: User
+    ): Promise<void> {
+        return this.dogsService.deleteDogById(id, user);
     }
 
     @Patch('/:id/city')
     updateDogCity(
       @Param('id', ParseIntPipe) id: number,
-      @Body('city', DogCityValidationPipe) city: string
+      @Body('city', DogCityValidationPipe) city: string,
+        @GetUser() user: User
     ): Promise<Dog> {
-        return this.dogsService.updateDogCity(id, city)
+        return this.dogsService.updateDogCity(id, city, user)
     }
 }
