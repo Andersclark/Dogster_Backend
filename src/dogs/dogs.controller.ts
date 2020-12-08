@@ -2,7 +2,7 @@ import {
     Body,
     Controller,
     Delete,
-    Get,
+    Get, Logger,
     Param,
     ParseIntPipe,
     Patch,
@@ -23,7 +23,7 @@ import { GetUser } from "../auth/get-user.decorator";
 @Controller('dogs')
 @UseGuards(AuthGuard())
 export class DogsController {
-
+    private logger = new Logger('DogsController')
     constructor(private dogsService: DogsService) {  }
 
     @Get('/:id')
@@ -31,6 +31,7 @@ export class DogsController {
       @Param('id', ParseIntPipe) id: number,
       @GetUser() user: User
     ): Promise<Dog> {
+        this.logger.verbose(`User ${user.username} retrieving dog with ID ${id}`);
         return this.dogsService.getDogById(id, user);
     }
 
@@ -38,6 +39,7 @@ export class DogsController {
     getDogs(@Query(ValidationPipe) filterDTO: GetDogsFilterDTO,
             @GetUser() user: User
             ): Promise<Dog[]> {
+        this.logger.verbose(`User ${user.username} retrieving all dogs. Filter: ${JSON.stringify(filterDTO)}`);
         return this.dogsService.getDogs(filterDTO, user);
     }
 
@@ -47,6 +49,7 @@ export class DogsController {
       @Body() createDogDTO: CreateDogDTO,
       @GetUser() user: User,
       ): Promise<Dog> {
+        this.logger.verbose(`User ${user.username} creating new Dog: ${JSON.stringify(createDogDTO)}`)
         return this.dogsService.createDog(createDogDTO, user);
     }
 
@@ -56,6 +59,7 @@ export class DogsController {
         ) id: number,
         @GetUser() user: User
     ): Promise<void> {
+        this.logger.verbose(`User ${user.username} deleting dog with ID ${id}`);
         return this.dogsService.deleteDogById(id, user);
     }
 
@@ -65,6 +69,7 @@ export class DogsController {
       @Body('city', DogCityValidationPipe) city: string,
         @GetUser() user: User
     ): Promise<Dog> {
+        this.logger.verbose(`User ${user.username} updating city of dog with ID ${id}`);
         return this.dogsService.updateDogCity(id, city, user)
     }
 }
