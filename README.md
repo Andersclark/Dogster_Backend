@@ -3,8 +3,10 @@
 ## Description
 
 This is the underbelly of the app for owners of social dogs: Dogster.
+The structure is based on the [Nest](https://github.com/nestjs/nest) TypeScript starter repository and was created while folloring the [NestJS-course](https://github.com/arielweinberger/nestjs-course-task-management) by Ariel Weinberger.
 
-[Nest](https://github.com/nestjs/nest) TypeScript starter repository.
+For general documentation of NestJS go [HERE](https://docs.nestjs.com/).
+
 
 ## Installation
 
