@@ -4,7 +4,6 @@ import { CreateDogDTO } from "./dto/create-dog.dto";
 import { GetDogsFilterDTO } from "./dto/get-dogs-filter.dto";
 import { DogRepository } from "./dog.repository";
 import { InjectRepository } from "@nestjs/typeorm";
-import { IsNotEmpty } from "class-validator";
 import { User } from "../auth/user.entity";
 
 // ON FILTERS: Filters are pre-defined (for example a UI button with "Malmö") and should not have to be mutated before applying them to the data collection.
