@@ -17,4 +17,5 @@ async function bootstrap() {
   await app.listen(port);
   logger.log(`Dogster listening on port ${port}...`);
 }
+// noinspection JSIgnoredPromiseFromCall
 bootstrap();
