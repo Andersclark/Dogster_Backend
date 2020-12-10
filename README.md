@@ -14,6 +14,17 @@ For general documentation of NestJS go [HERE](https://docs.nestjs.com/).
 $ npm install
 ```
 
+## Database
+
+Project requires a [Postgres](https://www.postgresql.org/download/) database that matches the configurations in `./config/*.yml`'s db-object.
+
+## Config
+
+General configurations are made in `.yml`-files in the `/config`-folder.
+
+Critical production-level configuration variables will be exposed through environment.
+
+
 ## Running the app
 
 ```bash
@@ -27,7 +38,9 @@ $ npm run start:dev
 $ npm run start:prod
 ```
 
-## Test
+## Testing
+Unit tests are written in [Jest](https://jestjs.io/) which is bundled in NestJS with additional documentation [HERE](https://docs.nestjs.com/fundamentals/testing).
+Test modules are created as ``{filename}.spec.ts`` and placed next to the file it tests.
 
 ```bash
 # unit tests
@@ -42,6 +55,6 @@ $ npm run test:cov
 
 ## Stay in touch
 
-- Author - [Anders Clark](https://github.com/andersclark)
-- Twitter - [@andersclark](https://twitter.com/andersclark)
+- Author: [Anders Clark](https://github.com/andersclark)
+- Twitter: [@andersclark](https://twitter.com/andersclark)
 
