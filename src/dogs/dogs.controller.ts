@@ -58,13 +58,12 @@ export class DogsController {
         return this.dogsService.deleteDogById(id, user);
     }
 
-    @Patch('/:id')
+    @Patch('/')
     @UsePipes(ValidationPipe)
     updateDog(
-      @Param('id', ParseIntPipe) id: number,
-      @Body('city', DogValidationPipe) city: string,
+      @Body(DogValidationPipe) dog: Dog,
         @GetUser() user: User
     ): Promise<Dog> {
-        return this.dogsService.updateDogCity(id, city, user)
+        return this.dogsService.updateDog(dog, user)
     }
 }

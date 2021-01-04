@@ -45,8 +45,7 @@ export class DogRepository extends Repository<Dog> {
       query.andWhere('(dog.name LIKE :search OR dog.description LIKE :search OR dog.owner LIKE :search)', { search: `%${search}%` });
     }
     try {
-      const dogs = await query.getMany();
-      return dogs;
+      return await query.getMany();
     } catch(error) {
       throw new InternalServerErrorException('Failed to get dogs');
     }

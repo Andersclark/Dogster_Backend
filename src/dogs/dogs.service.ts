@@ -43,20 +43,9 @@ export class DogsService {
     user: User
     ): Promise<void> {
    const result = await this.dogRepository.delete({ id: targetId, userId: user.id })
+
     if (result.affected === 0) {
       throw new NotFoundException(`Dog with id ${targetId} not found`)
-    } else {
     }
   }
- async updateDogCity(
-    targetId: number,
-    newCity: string,
-    user: User
- ): Promise<Dog> {
-    const dog = await this.getDogById(targetId, user);
-    dog.city = newCity;
-    await dog.save();
-    return dog;
-  }
-
 }
