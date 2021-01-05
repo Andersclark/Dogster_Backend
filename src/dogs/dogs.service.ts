@@ -1,4 +1,4 @@
-import {Injectable, NotFoundException} from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { Dog } from "./dog.entity";
 import { CreateDogDTO } from "./dto/create-dog.dto";
 import { GetDogsFilterDTO } from "./dto/get-dogs-filter.dto";
@@ -48,4 +48,18 @@ export class DogsService {
       throw new NotFoundException(`Dog with id ${targetId} not found`)
     }
   }
+
+// TODO: This needs to validate
+  async updateDog(
+    newDog: Dog,
+    user: User
+  ): Promise<Dog> {
+    let dog = await this.getDogById(newDog.id, user);
+    Object.keys(dog).forEach(key => dog[key] = newDog[key])
+    try {
+      return await dog.save();
+    } catch(e) { throw InternalServerErrorException }
+  }
+
 }
+
