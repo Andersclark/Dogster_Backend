@@ -55,6 +55,7 @@ export class DogsService {
     user: User
   ): Promise<Dog> {
     let dog = await this.getDogById(newDog.id, user);
+    
     Object.keys(dog).forEach(key => dog[key] = newDog[key])
     try {
       return await dog.save();
