@@ -1,12 +1,11 @@
-import { BaseEntity, Column, Entity, OneToMany, PrimaryGeneratedColumn, Unique } from "typeorm";
+import { Column, Entity, OneToMany, Unique } from "typeorm";
 import * as bcrypt from 'bcrypt';
 import { Dog } from "../dogs/dog.entity";
+import { DogsterBaseModel } from "../Entities/BaseModel";
 
 @Entity()
 @Unique(['username'])
-export class User extends BaseEntity {
-  @PrimaryGeneratedColumn()
-  id: number;
+export class User extends DogsterBaseModel {
   @Column()
   username: string;
   @Column()
@@ -14,7 +13,7 @@ export class User extends BaseEntity {
   @Column()
   salt: string;
 
-  @OneToMany(type => Dog, dog => dog.owner, { eager: true })
+  @OneToMany(() => Dog, dog => dog.owner, { eager: true })
   dogs: Dog[];
 
   async validatePassword(password: string): Promise<boolean> {

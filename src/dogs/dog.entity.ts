@@ -1,11 +1,9 @@
-import { BaseEntity, Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToOne } from "typeorm";
 import { User } from "../auth/user.entity";
+import { DogsterBaseModel } from "../Entities/BaseModel";
 
 @Entity()
-export class Dog extends BaseEntity {
-
-  @PrimaryGeneratedColumn()
-  id: number;
+export class Dog extends DogsterBaseModel {
 
   @Column()
   name: string;
@@ -19,7 +17,7 @@ export class Dog extends BaseEntity {
   @Column()
   area: string;
 
-  @ManyToOne(type => User, user => user.dogs, { eager: false })
+  @ManyToOne(() => User, user => user.dogs, { eager: false })
   owner: User;
 
   @Column()
