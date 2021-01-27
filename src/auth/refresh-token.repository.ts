@@ -9,18 +9,6 @@ import { EntityRepository, Repository } from "typeorm";
 @EntityRepository(RefreshToken)
 export class RefreshTokensRepository extends Repository<RefreshToken>  {
 
-  async createRefreshToken (user: User, lifetime: number): Promise<RefreshToken> {
-    const token = new RefreshToken()
-
-    token.userId = user.id;
-    token.isRevoked = false;
-
-    const expiration = new Date();
-    expiration.setTime(expiration.getTime() + lifetime);
-    token.expires = expiration
-
-    return token.save();
-  }
   async findTokenByUserId (userId: number): Promise<RefreshToken | null> {
     return await RefreshToken.findOne({ userId })
   }
@@ -28,9 +16,14 @@ export class RefreshTokensRepository extends Repository<RefreshToken>  {
     return await RefreshToken.findOne({ id })
   }
 
-  async revokeTokenForUser (userId: number): Promise<void> {
-      const token = await RefreshToken.findOne({ userId });
+  async revokeTokenForUser (userId: number): Promise<RefreshToken> {
+      const token = await RefreshToken.findOne({ userId: userId });
       token.isRevoked = true;
-      await token.save();
+      return token.save();
     }
+  async revokeTokenWithId (tokenId: number): Promise<RefreshToken> {
+    const token = await RefreshToken.findOne({ id: tokenId });
+    token.isRevoked = true;
+    return token.save();
+  }
 }
