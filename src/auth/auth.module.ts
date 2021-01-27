@@ -7,6 +7,7 @@ import { JwtModule } from "@nestjs/jwt";
 import { PassportModule } from "@nestjs/passport";
 import { JwtStrategy } from "./jwt.strategy";
 import * as config from 'config';
+import { RefreshTokensRepository } from "./refresh-token.repository";
 
 const jwtConfig = config.get('jwt');
 
@@ -19,7 +20,7 @@ const jwtConfig = config.get('jwt');
         expiresIn: jwtConfig.expiresIn,
       }
     }),
-    TypeOrmModule.forFeature([UserRepository]),
+    TypeOrmModule.forFeature([UserRepository, RefreshTokensRepository]),
   ],
   controllers: [AuthController],
   providers: [
