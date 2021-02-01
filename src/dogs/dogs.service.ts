@@ -17,7 +17,7 @@ export class DogsService {
   ) {}
 
   async getDogById(
-    targetId: number,
+    targetId: string,
     user: User
   ): Promise<Dog> {
     const found = await this.dogRepository.findOne({  where: { id: targetId, userId: user.id } });
@@ -39,10 +39,10 @@ export class DogsService {
   }
 
   async deleteDogById(
-    targetId: number,
+    targetId: string,
     user: User
     ): Promise<void> {
-   const result = await this.dogRepository.delete({ id: targetId, userId: user.id })
+   const result = await this.dogRepository.delete({ id: targetId, owner: user })
 
     if (result.affected === 0) {
       throw new NotFoundException(`Dog with id ${targetId} not found`)
@@ -55,7 +55,7 @@ export class DogsService {
     user: User
   ): Promise<Dog> {
     let dog = await this.getDogById(newDog.id, user);
-    
+
     Object.keys(dog).forEach(key => dog[key] = newDog[key])
     try {
       return await dog.save();

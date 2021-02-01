@@ -1,21 +1,23 @@
 import { EntityRepository, Repository } from "typeorm";
+import { InternalServerErrorException } from "@nestjs/common";
+import { v4 as uuid } from 'uuid';
 import { Dog } from "./dog.entity";
 import { CreateDogDTO } from "./dto/create-dog.dto";
 import { GetDogsFilterDTO } from "./dto/get-dogs-filter.dto";
 import { User } from "../auth/user.entity";
-import { InternalServerErrorException } from "@nestjs/common";
+
 
 @EntityRepository(Dog)
 export class DogRepository extends Repository<Dog> {
   async createDog(createDogDTO: CreateDogDTO, user: User): Promise<Dog> {
     const {  name, description, city, area } = createDogDTO;
     const dog = new Dog();
+    dog.id = uuid();
     dog.name = name;
     dog.description = description;
     dog.owner = user;
     dog.city = city;
     dog.area = area;
-    dog.userId = user.id;
     try {
       await dog.save();
     } catch(error) {
@@ -33,7 +35,7 @@ export class DogRepository extends Repository<Dog> {
     const { city, area, search } = filterDTO;
     const query = this.createQueryBuilder('dog');
     if(user) {
-      query.where('dog.userId = :userId', { userId: user.id });
+      query.where('dog.owner = :user', { owner: user });
     }
     if (city) {
       query.andWhere('dog.city = :city', { city })

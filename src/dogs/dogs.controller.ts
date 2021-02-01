@@ -2,9 +2,8 @@ import {
     Body,
     Controller,
     Delete,
-    Get, Logger,
+    Get,
     Param,
-    ParseIntPipe,
     Patch,
     Post,
     Query, UseGuards,
@@ -27,7 +26,7 @@ export class DogsController {
 
     @Get('/:id')
     getDogById(
-      @Param('id', ParseIntPipe) id: number,
+      @Param('id') id: string,
       @GetUser() user: User
     ): Promise<Dog> {
          return this.dogsService.getDogById(id, user);
@@ -51,8 +50,7 @@ export class DogsController {
 
     @Delete('/:id')
     deleteDogById(
-        @Param('id', ParseIntPipe
-        ) id: number,
+        @Param('id') id: string,
         @GetUser() user: User
     ): Promise<void> {
         return this.dogsService.deleteDogById(id, user);

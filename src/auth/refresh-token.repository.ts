@@ -1,30 +1,25 @@
-import { User } from "./user.entity";
 import { RefreshToken } from "./refresh-token.entity";
 import { EntityRepository, Repository } from "typeorm";
-
-/**
- https://medium.com/javascript-in-plain-english/nestjs-implementing-access-refresh-token-jwt-authentication-97a39e448007
-*/
 
 @EntityRepository(RefreshToken)
 export class RefreshTokensRepository extends Repository<RefreshToken>  {
 
-  async findTokenByUserId (userId: number): Promise<RefreshToken | null> {
+  async findTokenByUserId (userId: string): Promise<RefreshToken | null> {
     return await RefreshToken.findOne({ userId })
   }
-  async findTokenById (id: number): Promise<RefreshToken | null> {
+  async findTokenById (id: string): Promise<RefreshToken | null> {
     return await RefreshToken.findOne({ id })
   }
 
-  async revokeTokenForUser (userId: number): Promise<RefreshToken> {
-      const token = await RefreshToken.findOne({ userId: userId });
+  async revokeTokenForUser (userId: string): Promise<RefreshToken> {
+      const token = await this.findOne({ userId });
       if(token) {
         token.isRevoked = true;
         return token.save();
       }
       return;
     }
-  async revokeTokenWithId (tokenId: number): Promise<RefreshToken> {
+  async revokeTokenWithId (tokenId: string): Promise<RefreshToken> {
     const token = await RefreshToken.findOne({ id: tokenId });
     token.isRevoked = true;
     return token.save();

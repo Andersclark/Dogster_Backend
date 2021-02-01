@@ -1,11 +1,11 @@
-import { BaseEntity, Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, Column, Entity, ManyToOne, PrimaryColumn } from "typeorm";
 import { User } from "../auth/user.entity";
 
 @Entity()
 export class Dog extends BaseEntity {
 
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryColumn()
+  id: string;
 
   @Column()
   name: string;
@@ -19,10 +19,6 @@ export class Dog extends BaseEntity {
   @Column()
   area: string;
 
-  @ManyToOne(type => User, user => user.dogs, { eager: false })
+  @ManyToOne(type => User, user => user.dogs)
   owner: User;
-
-  @Column()
-  userId: number;
-
 }

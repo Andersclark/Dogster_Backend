@@ -2,6 +2,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { JwtService} from '@nestjs/jwt';
 import { SignOptions } from 'jsonwebtoken';
+import { v4 as uuid } from 'uuid';
 import { UserRepository } from './user.repository';
 import { AuthCredentialsDTO } from './dto/auth-credentials.dto';
 import { RefreshToken } from './refresh-token.entity';
@@ -40,9 +41,11 @@ export class AuthService {
       throw new UnauthorizedException();
     }
     const user = await this.userRepository.findOne({ username });
-    const authToken = await this.makeAuthToken(user.id)
-    const refreshToken = await this.makeRefreshToken(user.id);
-    return { authToken, refreshToken };
+    if(user) {
+      const authToken = await this.makeAuthToken(user.id);
+      const refreshToken = await this.makeRefreshToken(user.id);
+      return { authToken, refreshToken }
+    }
   }
   public async refresh(tokens: JwtDto) {
     const refreshToken = this.jwtService.decode(tokens.refreshToken);
@@ -52,19 +55,26 @@ export class AuthService {
 
     if (tokensAreValid && tokenIdsMatch && refreshTokenMatchesStoredVersion) {
       const newTokens = new JwtDto();
-      newTokens.authToken = await this.makeAuthToken(refreshToken['userId'])
-      newTokens.refreshToken = await this.makeRefreshToken(
-        refreshToken['userId'],
-      );
+      const userId = refreshToken['userId'];
+      newTokens.authToken = await this.makeAuthToken(userId)
+      newTokens.refreshToken = await this.makeRefreshToken(userId);
       return newTokens;
     } else return false;
   }
-  private async verifyTokens(tokens: JwtDto): Promise<boolean> {
+  private verifyTokens(tokens: JwtDto): boolean {
     const verifyOptions = { ignoreExpiration: false };
-    return !!(
-      (await this.jwtService.verifyAsync(tokens.refreshToken, verifyOptions)) &&
-      (await this.jwtService.verify(tokens.authToken, verifyOptions))
-    );
+    let result;
+    try {
+      result = !!(
+        (this.jwtService.verify(tokens.refreshToken, verifyOptions)) &&
+        (this.jwtService.verify(tokens.authToken, verifyOptions))
+      );
+    } catch(error){
+     return error
+    }
+    // TODO: Try-Catch JsonWebTokenError
+    // https://www.npmjs.com/package/jsonwebtoken
+    return result;
   }
   private async matchTokenIds(tokens: JwtDto): Promise<boolean> {
     const decodedRefreshToken = this.jwtService.decode(tokens.refreshToken);
@@ -79,7 +89,7 @@ export class AuthService {
       clientRefreshToken['id'],
     );
     const userIdsMatch =
-      storedRefreshToken.userId === Number(clientRefreshToken['userId']);
+      storedRefreshToken.userId === clientRefreshToken['userId'];
     const storedRefreshTokenIsNotExpired =
       storedRefreshToken.expires.valueOf() > Date.now();
 
@@ -89,24 +99,27 @@ export class AuthService {
       storedRefreshTokenIsNotExpired
     );
   }
-  private async makeRefreshToken(userID: number): Promise<string> {
+  private async makeRefreshToken(userId: string): Promise<string> {
+
     const refreshToken = new RefreshToken();
-    refreshToken.userId = userID;
+    refreshToken.id = uuid()
+    refreshToken.userId = userId;
     refreshToken.isRevoked = false;
     refreshToken.expires = new Date(Date.now() + REFRESH_TOKEN_LIFETIME);
-    await this.refreshTokenRepository.revokeTokenForUser(userID)
+    await this.refreshTokenRepository.revokeTokenForUser(userId)
     await refreshToken.save();
 
 
     const jwtOptions: SignOptions = {
       ...BASE_TOKEN_OPTIONS,
       expiresIn: REFRESH_TOKEN_LIFETIME,
-      subject: String(userID),
+      subject: String(userId),
       jwtid: String(refreshToken.id),
     };
     return this.jwtService.signAsync({ ...refreshToken }, jwtOptions);
   }
-  private async makeAuthToken(userId: number): Promise<string> {
+
+  private async makeAuthToken(userId: string): Promise<string> {
     const authPayload = { userId };
     return this.jwtService.signAsync(
       { ...authPayload },

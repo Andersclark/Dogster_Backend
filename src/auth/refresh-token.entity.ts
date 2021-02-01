@@ -1,12 +1,12 @@
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn, Unique } from "typeorm";
+import { BaseEntity, Column, Entity, PrimaryColumn, Unique } from "typeorm";
 
 @Entity()
 @Unique(['id'])
 export class RefreshToken extends BaseEntity {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryColumn()
+  id: string;
   @Column()
-  userId: number
+  userId: string
   @Column()
   isRevoked: boolean;
   @Column()
