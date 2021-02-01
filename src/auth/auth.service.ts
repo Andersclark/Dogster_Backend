@@ -14,11 +14,7 @@ const BASE_TOKEN_OPTIONS: SignOptions = {
   algorithm: 'HS256', //default
   expiresIn: 3600, //seconds
 };
-const REFRESH_TOKEN_LIFETIME =
-  60 * //seconds/
-  60 * // minutes
-  24 * // hours
-  7; // days
+const REFRESH_TOKEN_LIFETIME = 604800 // seconds = one week
 
 @Injectable()
 export class AuthService {
@@ -44,11 +40,7 @@ export class AuthService {
       throw new UnauthorizedException();
     }
     const user = await this.userRepository.findOne({ username });
-    const payload = { userId: user.id };
-    const authToken = await this.jwtService.signAsync(
-      { ...payload },
-      BASE_TOKEN_OPTIONS,
-    );
+    const authToken = await this.makeAuthToken(user.id)
     const refreshToken = await this.makeRefreshToken(user.id);
     return { authToken, refreshToken };
   }
@@ -57,26 +49,15 @@ export class AuthService {
     const tokensAreValid = await this.verifyTokens(tokens);
     const tokenIdsMatch = await this.matchTokenIds(tokens);
     const refreshTokenMatchesStoredVersion = await this.matchTokenToDB(tokens);
-    console.log(
-      'refresh token match stored version: ',
-      refreshTokenMatchesStoredVersion,
-    );
+
     if (tokensAreValid && tokenIdsMatch && refreshTokenMatchesStoredVersion) {
       const newTokens = new JwtDto();
-      const authPayload = { userId: refreshToken['userId'] };
-      newTokens.authToken = await this.jwtService.signAsync(
-        { ...authPayload },
-        BASE_TOKEN_OPTIONS,
-      );
+      newTokens.authToken = await this.makeAuthToken(refreshToken['userId'])
       newTokens.refreshToken = await this.makeRefreshToken(
         refreshToken['userId'],
       );
-
-      //TODO: Invalidate older refreshtokens for user
       return newTokens;
-    } else {
-      return false;
-    }
+    } else return false;
   }
   private async verifyTokens(tokens: JwtDto): Promise<boolean> {
     const verifyOptions = { ignoreExpiration: false };
@@ -124,5 +105,12 @@ export class AuthService {
       jwtid: String(refreshToken.id),
     };
     return this.jwtService.signAsync({ ...refreshToken }, jwtOptions);
+  }
+  private async makeAuthToken(userId: number): Promise<string> {
+    const authPayload = { userId };
+    return this.jwtService.signAsync(
+      { ...authPayload },
+      BASE_TOKEN_OPTIONS,
+    );
   }
 }
