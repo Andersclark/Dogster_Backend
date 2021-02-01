@@ -18,8 +18,11 @@ export class RefreshTokensRepository extends Repository<RefreshToken>  {
 
   async revokeTokenForUser (userId: number): Promise<RefreshToken> {
       const token = await RefreshToken.findOne({ userId: userId });
-      token.isRevoked = true;
-      return token.save();
+      if(token) {
+        token.isRevoked = true;
+        return token.save();
+      }
+      return;
     }
   async revokeTokenWithId (tokenId: number): Promise<RefreshToken> {
     const token = await RefreshToken.findOne({ id: tokenId });
