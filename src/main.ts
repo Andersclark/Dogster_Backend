@@ -9,7 +9,7 @@ async function bootstrap() {
 
   const serverConfig = config.get('server');
 
-  if(process.env.NODE_ENV === 'development') {
+  if (process.env.NODE_ENV === 'development') {
     logger.log(`CORS: enabled`);
     app.enableCors();
   }

@@ -1,6 +1,6 @@
-import { BaseEntity, Column, Entity, OneToMany, PrimaryColumn, Unique } from "typeorm";
+import { BaseEntity, Column, Entity, OneToMany, PrimaryColumn, Unique } from 'typeorm';
 import * as bcrypt from 'bcrypt';
-import { Dog } from "../dogs/dog.entity";
+import { Dog } from '../dogs/dog.entity';
 
 @Entity()
 @Unique(['username', 'id'])
@@ -18,7 +18,7 @@ export class User extends BaseEntity {
   dogs: Dog[];
 
   async validatePassword(password: string): Promise<boolean> {
-    const hash = await bcrypt.hash(password, this.salt)
+    const hash = await bcrypt.hash(password, this.salt);
     return hash === this.password;
   }
 }

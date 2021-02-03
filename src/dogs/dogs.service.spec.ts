@@ -17,7 +17,6 @@ const mockCreateDogDTO = {
   description: 'Unit TestPilot',
   city: 'city',
   area: 'area',
-
 };
 const mockDogRepository = () => ({
   getDogs: jest.fn(),
@@ -44,7 +43,6 @@ describe('Dogsservice', () => {
     dogRepository = await module.get<DogRepository>(DogRepository);
   });
   describe('getDogs', () => {
-
     it('gets all dogs from repository', async () => {
       dogRepository.getDogs.mockReturnValue('someValue');
       expect(dogRepository.getDogs).not.toHaveBeenCalled();
@@ -61,7 +59,6 @@ describe('Dogsservice', () => {
     });
   });
   describe('getDogById', () => {
-
     it('call dogRepository.findOne() and successfully retrieve and return the dog', async () => {
       dogRepository.findOne.mockReturnValue(mockDog);
       const result = await dogsService.getDogById(1, mockUser);
@@ -76,37 +73,32 @@ describe('Dogsservice', () => {
 
     it('throws an error when task is not found', () => {
       dogRepository.findOne.mockResolvedValue(null);
-      expect(dogsService.getDogById(1, mockUser)).rejects.toThrow(
-        NotFoundException,
-      );
+      expect(dogsService.getDogById(1, mockUser)).rejects.toThrow(NotFoundException);
     });
   });
 
   describe('createDog', () => {
-
     it('calls dogRepository.create() and returns the result', async () => {
-      const expectedReturn = 'someDog'
+      const expectedReturn = 'someDog';
       dogRepository.createDog.mockReturnValue(expectedReturn);
       expect(dogRepository.createDog).not.toHaveBeenCalled();
       const result = await dogsService.createDog(mockCreateDogDTO, mockUser);
       expect(dogRepository.createDog).toHaveBeenCalledWith(mockCreateDogDTO, mockUser);
       expect(result).toEqual(expectedReturn);
-    })
+    });
   });
 
   describe('deleteDog', () => {
-
     it('calls dogRepository.delete()', async () => {
       dogRepository.delete.mockReturnValue({ affected: 1 });
       expect(dogRepository.delete).not.toHaveBeenCalled();
       await dogsService.deleteDogById(1, mockUser);
       expect(dogRepository.delete).toHaveBeenCalledWith({ id: 1, userId: mockUser.id });
-    })
+    });
 
     it('throws an error if dog is not found', async () => {
       dogRepository.delete.mockReturnValue({ affected: 0 });
       await expect(dogsService.deleteDogById(1, mockUser)).rejects.toThrow(NotFoundException);
     });
   });
-
 });

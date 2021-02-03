@@ -1,19 +1,17 @@
 import { Test } from '@nestjs/testing';
-import { UserRepository } from "./user.repository";
-import { ConflictException, InternalServerErrorException } from "@nestjs/common";
-import { User } from "./user.entity";
+import { UserRepository } from './user.repository';
+import { ConflictException, InternalServerErrorException } from '@nestjs/common';
+import { User } from './user.entity';
 import * as bcrypt from 'bcrypt';
 
 const mockCredentialsDto = { username: 'TestUsername', password: 'TestPassword' };
 
 describe('UserRepository', () => {
-  var userRepository;
+  let userRepository;
 
   beforeEach(async () => {
     const module = await Test.createTestingModule({
-      providers: [
-        UserRepository,
-      ],
+      providers: [UserRepository],
     }).compile();
 
     userRepository = await module.get<UserRepository>(UserRepository);
@@ -23,9 +21,9 @@ describe('UserRepository', () => {
     let save;
     beforeEach(() => {
       save = jest.fn();
-      userRepository.create = jest.fn().mockReturnValue({ save })
+      userRepository.create = jest.fn().mockReturnValue({ save });
     });
-    it('successfully signs up the user', async() => {
+    it('successfully signs up the user', async () => {
       save.mockResolvedValue(undefined);
       expect(userRepository.signUp(mockCredentialsDto)).resolves.not.toThrow();
     });
@@ -35,8 +33,10 @@ describe('UserRepository', () => {
     });
     it('throws an Internal server Exception when other error code is received', async () => {
       save.mockRejectedValue({ code: '12345265' });
-      await expect(userRepository.signUp(mockCredentialsDto)).rejects.toThrow(InternalServerErrorException);
-    })
+      await expect(userRepository.signUp(mockCredentialsDto)).rejects.toThrow(
+        InternalServerErrorException,
+      );
+    });
   });
 
   describe('validateUserPassword', () => {
@@ -67,17 +67,14 @@ describe('UserRepository', () => {
       expect(user.validatePassword).toHaveBeenCalled();
       expect(result).toBeNull();
     });
-  describe('hashPassword', () => {
-    it('calls bcrypt.hash to generate hash', async () => {
-      bcrypt.hash = jest.fn().mockResolvedValue('testHash');
-      expect(bcrypt.hash).not.toHaveBeenCalled();
-      const result = await userRepository.hashPassword('testPassword', 'testSalt');
-      expect(bcrypt.hash).toHaveBeenCalledWith('testPassword', 'testSalt');
-      expect(result).toEqual('testHash');
-    })
-  })
-  })
-
-
-
+    describe('hashPassword', () => {
+      it('calls bcrypt.hash to generate hash', async () => {
+        bcrypt.hash = jest.fn().mockResolvedValue('testHash');
+        expect(bcrypt.hash).not.toHaveBeenCalled();
+        const result = await userRepository.hashPassword('testPassword', 'testSalt');
+        expect(bcrypt.hash).toHaveBeenCalledWith('testPassword', 'testSalt');
+        expect(result).toEqual('testHash');
+      });
+    });
+  });
 });

@@ -2,8 +2,8 @@ import { Module } from '@nestjs/common';
 import { AppService } from './app.service';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { DogsModule } from './dogs/dogs.module';
-import { TypeOrmModule } from "@nestjs/typeorm";
-import { typeOrmConfig } from "./config/typeorm.config";
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { typeOrmConfig } from './config/typeorm.config';
 import { AuthModule } from './auth/auth.module';
 import { join } from 'path';
 
@@ -14,7 +14,7 @@ import { join } from 'path';
     }),
     TypeOrmModule.forRoot(typeOrmConfig),
     DogsModule,
-    AuthModule
+    AuthModule,
   ],
   providers: [AppService],
 })

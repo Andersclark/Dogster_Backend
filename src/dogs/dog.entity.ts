@@ -1,9 +1,8 @@
-import { BaseEntity, Column, Entity, ManyToOne, PrimaryColumn } from "typeorm";
-import { User } from "../auth/user.entity";
+import { BaseEntity, Column, Entity, ManyToOne, PrimaryColumn } from 'typeorm';
+import { User } from '../auth/user.entity';
 
 @Entity()
 export class Dog extends BaseEntity {
-
   @PrimaryColumn()
   id: string;
 
