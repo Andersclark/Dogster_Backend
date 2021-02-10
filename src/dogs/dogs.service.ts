@@ -41,8 +41,8 @@ export class DogsService {
   }
 
   // TODO: This needs to validate
-  async updateDog(newDog: Dog, user: User): Promise<Dog> {
-    const dog = await this.getDogById(newDog.id, user);
+  async updateDog(newDog: Dog): Promise<Dog> {
+    const dog = await this.getDogById(newDog.id);
 
     Object.keys(dog).forEach(key => (dog[key] = newDog[key]));
     try {
