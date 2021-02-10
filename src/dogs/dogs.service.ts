@@ -16,8 +16,8 @@ export class DogsService {
     private dogRepository: DogRepository,
   ) {}
 
-  async getDogById(targetId: string, user: User): Promise<Dog> {
-    const found = await this.dogRepository.findOne({ where: { id: targetId, userId: user.id } });
+  async getDogById(targetId: string): Promise<Dog> {
+    const found = await this.dogRepository.findOne({ where: { id: targetId } });
     if (!found) {
       throw new NotFoundException(`Dog with id ${targetId} not found`);
     }
@@ -25,11 +25,11 @@ export class DogsService {
   }
 
   async getDogs(filterDTO: GetDogsFilterDTO, user: User): Promise<Dog[]> {
-    return this.dogRepository.getDogs(filterDTO, user);
+    return await this.dogRepository.getDogs(filterDTO, user);
   }
 
   async createDog(createDogDTO: CreateDogDTO, user: User): Promise<Dog> {
-    return this.dogRepository.createDog(createDogDTO, user);
+    return await this.dogRepository.createDog(createDogDTO, user);
   }
 
   async deleteDogById(targetId: string, user: User): Promise<void> {

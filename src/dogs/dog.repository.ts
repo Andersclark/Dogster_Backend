@@ -41,7 +41,10 @@ export class DogRepository extends Repository<Dog> {
     }
     if (search) {
       query.andWhere(
-        '(dog.name LIKE :search OR dog.description LIKE :search OR dog.owner LIKE :search)',
+        '(dog.name LIKE :search ' +
+          'OR dog.description LIKE :search ' +
+          'OR dog.owner LIKE :search ' +
+          'OR dog.area LIKE :search)',
         { search: `%${search}%` },
       );
     }
