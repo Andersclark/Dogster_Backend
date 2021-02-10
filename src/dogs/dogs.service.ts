@@ -40,15 +40,16 @@ export class DogsService {
     }
   }
 
-  // TODO: This needs to validate
-  async updateDog(newDog: Dog): Promise<Dog> {
+  // TODO: This needs to validate that user is owner of dog
+  async updateDog(newDog: Dog, user: User): Promise<Dog> {
     const dog = await this.getDogById(newDog.id);
-
-    Object.keys(dog).forEach(key => (dog[key] = newDog[key]));
-    try {
-      return await dog.save();
-    } catch (e) {
-      throw InternalServerErrorException;
+    if (user.dogs.find(userDog => userDog === dog)) {
+      Object.keys(dog).forEach(key => (dog[key] = newDog[key]));
+      try {
+        return await dog.save();
+      } catch (e) {
+        throw InternalServerErrorException;
+      }
     }
   }
 }

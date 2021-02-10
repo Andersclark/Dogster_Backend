@@ -27,7 +27,7 @@ export class DogsController {
 
   @Get('/:id')
   getDogById(@Param('id') id: string, @GetUser() user: User): Promise<Dog> {
-    return this.dogsService.getDogById(id, user);
+    return this.dogsService.getDogById(id);
   }
 
   @Get()
